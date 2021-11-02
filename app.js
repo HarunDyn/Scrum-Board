@@ -142,10 +142,8 @@ function manpDoneDiv(e) {
 
 
 function alertAddToDo() {
-    setTimeout(function () {
-        alertContainer.innerHTML = `<p class="alert"> Başarıyla Eklendi </p> `;
 
-    }, 0)
+    alertContainer.innerHTML = `<p class="alert"> Başarıyla Eklendi </p> `;
 
     setTimeout(function () {
         alertContainer.innerHTML = ``;
@@ -154,10 +152,8 @@ function alertAddToDo() {
 }
 
 function alertDeleteToDo() {
-    setTimeout(function () {
-        alertContainer.innerHTML = `<p class="alert-delete"> Başarıyla Silindi .. </p> `;
 
-    }, 0)
+    alertContainer.innerHTML = `<p class="alert-delete"> Başarıyla Silindi .. </p> `;
 
     setTimeout(function () {
         alertContainer.innerHTML = ``;
