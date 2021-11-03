@@ -11,8 +11,66 @@ const filter = document.querySelector("#filter");
 const count1 = document.querySelector("#count1");
 const count2 = document.querySelector("#count2");
 const count3 = document.querySelector("#count3");
+// let todos = [{
+//     id: 1,
+//     value: "todo1",
+//     isUndone: true,
+//     isProcessing: false,
+//     isDone: false
+// },
+// {
+//     id: 2,
+//     value: "todo2",
+//     isUndone: false,
+//     isProcessing: true,
+//     isDone: false
+// },
+// {
+//     id: 3,
+//     value: "todo3",
+//     isUndone: false,
+//     isProcessing: false,
+//     isDone: true
+// }
+// ]
+let todos;
+if (localStorage.getItem('todos')) {
+    todos = JSON.parse(localStorage.getItem('todos'))
+    todos.forEach(todo => {
+        if (todo.isUndone == true) {
+            ulUndone.innerHTML += ` <li class="li-undone">
+                            <div class="undonediv">
+                                <input type="checkbox" id="checkbox">
+                                <span>${todo.value}</span>
+                                <span>${todo.id}</span>
+                            </div>
+                            <i class="fa fa-remove"></i> </li> `
+        } else if (todo.isProcessing == true) {
+            ulProcess.innerHTML += `<li class="li-process">
+                            <div class="processdiv">
+                                <input type="checkbox" id="checkbox">
+                                <span>${todo.value}</span> 
+                                <span>${todo.id}</span> 
+                            </div>
+                            <i class="fa fa-remove"></i> </li> `
+        } else if (todo.isDone == true) {
+            ulDone.innerHTML += `<li class="li-done">
+            <div class="donediv">
+            <span>${todo.value}</span>
+            <span>${todo.id}</span>
+            </div>
+            <i class="fa fa-remove"></i></li>`
+        }
+    })
+} else {
+    todos = []
+}
 
+// let todos;
+// // if (localStorage.getItem('todos')) {
+// //     todos = JSON.parse(localStorage.getItem('todos'));
 
+// // }
 
 
 
@@ -34,16 +92,23 @@ let countShow3 = 0;
 
 function addTodoItem() {
     let value = addTodo.value.toLowerCase().trim();
+    let id = createId()
+    const todo = createTodo(id, value, true, false, false)
     if (countShow1 == 4) {
         alert("you can't add than more")
     } else if (value !== "") {
+
         ulUndone.innerHTML += ` <li class="li-undone">
                         <div class="undonediv">
                             <input type="checkbox" id="checkbox">
-                            <span>${value}</span>
+                            <span>${todo.value}</span>
+                            <span>${todo.id}</span>
                         </div>
                         <i class="fa fa-remove"></i> </li> `
         alertAddToDo();
+        todos.push(todo)
+        localStorage.setItem('todos', JSON.stringify(todos))
+        console.log(todos);
         countShow1 += 1;
         count1.innerText = `${countShow1}/4`
         console.log(countShow1)
@@ -60,12 +125,25 @@ console.log(countShow1)
 
 function manpUndoneDiv(e) {
     if (e.target.id == "checkbox") {
+        const id = e.target.nextElementSibling.nextElementSibling.innerText;
+
+        todos.forEach((todo => {
+            if (todo.id == id) {
+                todo.isUndone = false;
+                todo.isProcessing = true;
+            }
+        }))
+
+        localStorage.setItem('todos', JSON.stringify(todos));
+
+
 
         if (countShow2 != 4) {
             ulProcess.innerHTML += `<li class="li-process">
                         <div class="processdiv">
                             <input type="checkbox" id="checkbox">
-                            <span>${e.target.nextElementSibling.innerText}</span> 
+                            <span>${e.target.nextElementSibling.innerText}</span>
+                            <span>${id}</span>
                         </div>
                         <i class="fa fa-remove"></i> </li> `
             countShow2 += 1;
@@ -79,6 +157,7 @@ function manpUndoneDiv(e) {
 
 
     } else if (e.target.className == "fa fa-remove") {
+
         e.target.parentElement.remove()
         countShow1 -= 1
         count1.innerText = `${countShow1}/4`;
@@ -92,9 +171,19 @@ function manpUndoneDiv(e) {
 function manpProcessDiv(e) {
     if (e.target.id == "checkbox") {
         if (countShow3 != 4) {
+            console.log(e.target.nextElementSibling.nextElementSibling.innerText);
+            const id = e.target.nextElementSibling.nextElementSibling.innerText;
+            todos.forEach((todo => {
+                if (todo.id == id) {
+                    todo.isProcessing = false;
+                    todo.isDone = true;
+                }
+            }))
+            localStorage.setItem('todos', JSON.stringify(todos))
             ulDone.innerHTML += `<li class="li-done">
                         <div class="donediv">
                         <span>${e.target.nextElementSibling.innerText}</span>
+                        <span>${id}</span>
                         </div>
                         <i class="fa fa-remove"></i></li>`
             countShow2 -= 1
@@ -107,17 +196,21 @@ function manpProcessDiv(e) {
         }
 
     } else if (e.target.className == "fa fa-remove") {
+        console.log("tessssss");
         if (countShow1 != 4) {
+
             ulUndone.innerHTML += `<li class="li-undone">
                             <div class="undonediv">
                                 <input type="checkbox" id="checkbox">
                                 <span>${e.target.previousElementSibling.children[1].innerText}</span>
+                                <span>${id}</span>
                             </div>
                             <i class="fa fa-remove"></i>    </li>`
             countShow1 += 1
             countShow2 -= 1
             count1.innerText = `${countShow1}/4`
             count2.innerText = `${countShow2}/4`
+            console.log("test");
             e.target.parentElement.remove()
         } else {
             alert("you can't remove to-do in processing because Undone table is full")
@@ -131,6 +224,14 @@ function manpProcessDiv(e) {
 
 function manpDoneDiv(e) {
     if (e.target.className == "fa fa-remove") {
+
+        const id = e.target.previousElementSibling.children[1].innerText;
+        todos.forEach(((todo, index) => {
+            if (todo.id == id) {
+                todos.splice(index, 1)
+            }
+        }))
+        localStorage.setItem('todos', JSON.stringify(todos))
         e.target.parentElement.remove()
         countShow3 -= 1
         count3.innerText = `${countShow3}/4`
@@ -192,4 +293,22 @@ function filterTodo() {
     })
 
 
+}
+// id: 1,
+//     value: "todo1",
+//         isUndone: true,
+//             isProcessing: false,
+//                 isDone: false
+
+function createTodo(id, value, isUndone, isProcessing, isDone) {
+    return {
+        id,
+        value,
+        isUndone,
+        isProcessing,
+        isDone
+    }
+}
+function createId() {
+    return Date.now();
 }
