@@ -141,6 +141,8 @@ function manpDoneDiv(e) {
 }
 
 
+
+
 function alertAddToDo() {
 
     alertContainer.innerHTML = `<p class="alert"> Başarıyla Eklendi </p> `;
