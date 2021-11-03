@@ -42,7 +42,6 @@ if (localStorage.getItem('todos')) {
                             <div class="undonediv">
                                 <input type="checkbox" id="checkbox">
                                 <span>${todo.value}</span>
-                                <span>${todo.id}</span>
                             </div>
                             <i class="fa fa-remove"></i> </li> `
         } else if (todo.isProcessing == true) {
@@ -50,14 +49,12 @@ if (localStorage.getItem('todos')) {
                             <div class="processdiv">
                                 <input type="checkbox" id="checkbox">
                                 <span>${todo.value}</span> 
-                                <span>${todo.id}</span> 
                             </div>
                             <i class="fa fa-remove"></i> </li> `
         } else if (todo.isDone == true) {
             ulDone.innerHTML += `<li class="li-done">
             <div class="donediv">
             <span>${todo.value}</span>
-            <span>${todo.id}</span>
             </div>
             <i class="fa fa-remove"></i></li>`
         }
@@ -102,7 +99,6 @@ function addTodoItem() {
                         <div class="undonediv">
                             <input type="checkbox" id="checkbox">
                             <span>${todo.value}</span>
-                            <span>${todo.id}</span>
                         </div>
                         <i class="fa fa-remove"></i> </li> `
         alertAddToDo();
@@ -196,7 +192,6 @@ function manpProcessDiv(e) {
         }
 
     } else if (e.target.className == "fa fa-remove") {
-        console.log("tessssss");
         if (countShow1 != 4) {
 
             ulUndone.innerHTML += `<li class="li-undone">
@@ -210,7 +205,6 @@ function manpProcessDiv(e) {
             countShow2 -= 1
             count1.innerText = `${countShow1}/4`
             count2.innerText = `${countShow2}/4`
-            console.log("test");
             e.target.parentElement.remove()
         } else {
             alert("you can't remove to-do in processing because Undone table is full")
@@ -309,6 +303,7 @@ function createTodo(id, value, isUndone, isProcessing, isDone) {
         isDone
     }
 }
+
 function createId() {
     return Date.now();
 }
