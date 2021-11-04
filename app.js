@@ -42,19 +42,22 @@ if (localStorage.getItem('todos')) {
                             <div class="undonediv">
                                 <input type="checkbox" id="checkbox">
                                 <span>${todo.value}</span>
+                                <span style="display:none">${todo.id}</span>
                             </div>
                             <i class="fa fa-remove"></i> </li> `
         } else if (todo.isProcessing == true) {
             ulProcess.innerHTML += `<li class="li-process">
                             <div class="processdiv">
                                 <input type="checkbox" id="checkbox">
-                                <span>${todo.value}</span> 
+                                <span>${todo.value}</span>
+                                <span style="display:none">${todo.id}</span>
                             </div>
                             <i class="fa fa-remove"></i> </li> `
         } else if (todo.isDone == true) {
             ulDone.innerHTML += `<li class="li-done">
             <div class="donediv">
             <span>${todo.value}</span>
+            <span style="display:none">${todo.id}</span>
             </div>
             <i class="fa fa-remove"></i></li>`
         }
@@ -68,6 +71,30 @@ if (localStorage.getItem('todos')) {
 // //     todos = JSON.parse(localStorage.getItem('todos'));
 
 // // }
+let countShow1 = 0;
+let countShow2 = 0;
+let countShow3 = 0;
+
+
+
+let countLocal;
+
+if (localStorage.getItem("countLocal")) {
+    countLocal = JSON.parse(localStorage.getItem("countLocal"))
+    console.log("çalıştı")
+    count1.innerHTML = `${countLocal[0]}/4`;
+    count2.innerHTML = `${countLocal[1]} / 4`;
+    count3.innerHTML = `${countLocal[2]} / 4`;
+
+    countShow1 = countLocal[0];
+    countShow2 = countLocal[1];
+    countShow3 = countLocal[2];
+
+
+} else {
+    countLocal = [0, 0, 0]
+}
+
 
 
 
@@ -82,9 +109,7 @@ function eventListener() {
     filter.addEventListener("keyup", filterTodo)
 }
 
-let countShow1 = 0;
-let countShow2 = 0;
-let countShow3 = 0;
+
 
 
 function addTodoItem() {
@@ -99,6 +124,7 @@ function addTodoItem() {
                         <div class="undonediv">
                             <input type="checkbox" id="checkbox">
                             <span>${todo.value}</span>
+                            <span style="display:none">${todo.id}</span>
                         </div>
                         <i class="fa fa-remove"></i> </li> `
         alertAddToDo();
@@ -106,6 +132,8 @@ function addTodoItem() {
         localStorage.setItem('todos', JSON.stringify(todos))
         console.log(todos);
         countShow1 += 1;
+        countLocal[0] += 1;
+        localStorage.setItem('countLocal', JSON.stringify(countLocal))
         count1.innerText = `${countShow1}/4`
         console.log(countShow1)
         addTodo.value = "";
@@ -121,8 +149,9 @@ console.log(countShow1)
 
 function manpUndoneDiv(e) {
     if (e.target.id == "checkbox") {
+        console.log(e.target.id)
         const id = e.target.nextElementSibling.nextElementSibling.innerText;
-
+        console.log(id)
         todos.forEach((todo => {
             if (todo.id == id) {
                 todo.isUndone = false;
@@ -139,11 +168,15 @@ function manpUndoneDiv(e) {
                         <div class="processdiv">
                             <input type="checkbox" id="checkbox">
                             <span>${e.target.nextElementSibling.innerText}</span>
-                            <span>${id}</span>
+                            <span style="display:none">${id}</span>
                         </div>
                         <i class="fa fa-remove"></i> </li> `
             countShow2 += 1;
+            countLocal[1] += 1;
+            localStorage.setItem('countLocal', JSON.stringify(countLocal))
             countShow1 -= 1;
+            countLocal[0] -= 1;
+            localStorage.setItem('countLocal', JSON.stringify(countLocal))
             count1.innerText = `${countShow1}/4`;
             count2.innerText = `${countShow2}/4`;
             e.target.parentElement.parentElement.remove()
@@ -153,9 +186,17 @@ function manpUndoneDiv(e) {
 
 
     } else if (e.target.className == "fa fa-remove") {
-
+        const id = e.target.previousElementSibling.children[2].innerText;
+        todos.forEach(((todo, index) => {
+            if (todo.id == id) {
+                todos.splice(index, 1)
+            }
+        }))
+        localStorage.setItem('todos', JSON.stringify(todos))
         e.target.parentElement.remove()
         countShow1 -= 1
+        countLocal[0] -= 1;
+        localStorage.setItem('countLocal', JSON.stringify(countLocal))
         count1.innerText = `${countShow1}/4`;
         alertDeleteToDo()
     }
@@ -179,11 +220,15 @@ function manpProcessDiv(e) {
             ulDone.innerHTML += `<li class="li-done">
                         <div class="donediv">
                         <span>${e.target.nextElementSibling.innerText}</span>
-                        <span>${id}</span>
+                        <span style="display:none">${id}</span>
                         </div>
                         <i class="fa fa-remove"></i></li>`
             countShow2 -= 1
+            countLocal[1] -= 1;
+            localStorage.setItem('countLocal', JSON.stringify(countLocal))
             countShow3 += 1
+            countLocal[2] += 1;
+            localStorage.setItem('countLocal', JSON.stringify(countLocal))
             count2.innerText = `${countShow2}/4`;
             count3.innerText = `${countShow3}/4`;
             e.target.parentElement.parentElement.remove()
@@ -193,16 +238,29 @@ function manpProcessDiv(e) {
 
     } else if (e.target.className == "fa fa-remove") {
         if (countShow1 != 4) {
+            const id = e.target.previousElementSibling.children[2].innerText;
+            console.log(id)
+            todos.forEach((todo => {
+                if (todo.id == id) {
+                    todo.isProcessing = false;
+                    todo.isUnDone = true;
+                }
+            }))
+            localStorage.setItem('todos', JSON.stringify(todos))
 
             ulUndone.innerHTML += `<li class="li-undone">
                             <div class="undonediv">
                                 <input type="checkbox" id="checkbox">
-                                <span>${e.target.previousElementSibling.children[1].innerText}</span>
-                                <span>${id}</span>
+                                <span>${e.target.previousElementSibling.innerText}</span>
+                                <span style="display:none">${id}</span>
                             </div>
                             <i class="fa fa-remove"></i>    </li>`
             countShow1 += 1
+            countLocal[0] += 1;
+            localStorage.setItem('countLocal', JSON.stringify(countLocal))
             countShow2 -= 1
+            countLocal[1] -= 1;
+            localStorage.setItem('countLocal', JSON.stringify(countLocal))
             count1.innerText = `${countShow1}/4`
             count2.innerText = `${countShow2}/4`
             e.target.parentElement.remove()
@@ -228,6 +286,8 @@ function manpDoneDiv(e) {
         localStorage.setItem('todos', JSON.stringify(todos))
         e.target.parentElement.remove()
         countShow3 -= 1
+        countLocal[2] -= 1;
+        localStorage.setItem('countLocal', JSON.stringify(countLocal))
         count3.innerText = `${countShow3}/4`
         alertDeleteToDo()
     }
